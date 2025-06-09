@@ -1,42 +1,45 @@
 const mongoose = require("mongoose");
-const crypto = require("crypto");
 const validator = require("validator");
-const contributionShema = require("./contributions");
+const otpGenerator = require("otp-generator");
+const sendOtpToEmail = require("../utils/email");
+const crypto = require("crypto");
 
-const userSchema = mongoose.Schema({
+const userSchema = new mongoose.Schema({
   firstname: {
     type: String,
-    required: true,
-    minlength: [3, "First name should be at least 3 characters."],
-    maxlength: [12, "First name should not exceed 12 characters."],
+    required: [, "First name required"],
+    minLength: [3, "First name should be at least 3 characters."],
+    maxLength: [12, "First name should not exceed 12 characters."],
   },
   lastname: {
     type: String,
-    required: true,
-    minlength: [1, "Second name should be at least 1 character."],
-    maxlength: [15, "Second name should not exceed 15 characters."],
+    minLength: [1, "Second name should be at least 1 character."],
+    maxLength: [15, "Second name should not exceed 15 characters,"],
   },
   email: {
     type: String,
-    required: true,
     unique: true,
-    lowercase: true,
     validate: {
       validator: (email) => validator.isEmail(email),
-      message: (props) => `${props.value} is not a valid email address!`,
+      message: (props) => `${props.value} is not a valid email address`,
     },
+    required: [true, "User email address required"],
   },
   phone: {
     type: String,
-    required: true,
     unique: true,
+    required: [true, "User mobile number required"],
     validate: {
       validator: (phone) =>
         validator.isMobilePhone(phone, "any", { strictMode: false }),
-      message: (props) => `${props.value} is not a valid phone number!`,
+      message: (props) => `${props.value} is not a valid phone number`,
     },
   },
-  prevPhones: [],
+  userType: {
+    type: String,
+    enum: ["user", "admin"],
+    default: "user",
+  },
   isEmailVerified: {
     type: Boolean,
     default: false,
@@ -47,122 +50,105 @@ const userSchema = mongoose.Schema({
   },
   passwordHash: {
     type: String,
-    validate: {
-      validator: function (v) {
-        return this.isEmailVerified ? v : true;
-      },
-      message: "Password is required",
-    },
+    required: [true, "Password required"],
   },
-  contributions: [contributionShema],
-  userCategory: {
+  hashedEmailOtp: {
     type: String,
-    enum: ["communityUploader", "reuniteSeeker", "both"],
-    default: "communityUploader",
-    required: true,
   },
-  address: {
+  hashedEmailOtpExpiresAt: Date,
+  hashedPhoneOtp: {
     type: String,
-    validate: {
-      validator: function (v) {
-        return this.userCategory === "reuniteSeeker" ||
-          this.userCategory === "both"
-          ? !!v
-          : true;
-      },
-      message: "Address is required for Reunite Seeker or Both categories.",
-    },
   },
-  authorizedIdType: {
-    type: String,
-    validate: {
-      validator: function (v) {
-        return this.userCategory === "reuniteSeeker" ||
-          this.userCategory === "both"
-          ? !!v
-          : true;
-      },
-      message:
-        "Authorized ID Type is required for Reunite Seeker or Both categories.",
-    },
-  },
-  authorizedIdNo: {
-    type: String,
-    validate: {
-      validator: function (v) {
-        return this.userCategory === "reuniteSeeker" ||
-          this.userCategory === "both"
-          ? !!v
-          : true;
-      },
-      message:
-        "Authorized ID Number is required for Reunite Seeker or Both categories.",
-    },
-  },
-  role: {
-    type: String,
-    default: "user",
-  },
-  isActive: {
-    type: Boolean,
-    required: true,
-    default: false,
-  },
-  isPasswordSet: {
-    type: Boolean,
-    required: true,
-    default: false,
-  },
-
-  isAccountDeleted: {
-    type: Boolean,
-    required: true,
-    default: false,
-  },
-
-  accountRegisteredAt: { type: Date, default: Date.now },
-  accountDeletetedAt: {
+  accountCreatedAt: {
     type: Date,
+    default: Date.now,
   },
-  whoDeleted: [
+  isAccountActive: {
+    type: Boolean,
+    default: false,
+  },
+  trips: [
     {
-      userId: {
-        _id: false,
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "User",
-      },
-      role: {
-        type: String,
-        enum: ["Admin", "User"],
-      },
-      deletionDate: { type: Date, default: Date.now },
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Trip",
     },
   ],
-  emailVerificationToken: String,
-  emailVerificationTokenExpires: Date,
-  otp: String,
-  otpExpires: Date,
-
-  isRequestedPasswordReset: {
-    type: Boolean,
-    default: false,
-  },
+  hashedPasswordResetOtp: String,
+  hashedPasswordResetOtpExpiresAt: Date,
 });
 
-userSchema.methods.createEmailVerificationToken = function () {
-  const emailToken = crypto.randomBytes(32).toString("hex");
-  this.emailVerificationToken = crypto
-    .createHash("sha256")
-    .update(emailToken)
-    .digest("hex");
-  this.emailVerificationTokenExpires = new Date(Date.now() + 30 * 60 * 1000);
+userSchema.methods.generateAndSendOtpEmail = async function () {
+  try {
+    const emailOtp = otpGenerator.generate(6, {
+      upperCaseAlphabets: true,
+      specialChars: true,
+      lowerCaseAlphabets: true,
+    });
 
-  return emailToken;
+    const hashedEmailOtp = crypto
+      .createHash("sha256")
+      .update(emailOtp)
+      .digest("hex");
+
+    this.hashedEmailOtp = hashedEmailOtp;
+    this.hashedEmailOtpExpiresAt = new Date(Date.now() + 15 * 60 * 1000); // expires in 15 minutes
+
+    await this.save();
+
+    const option = {
+      email: this.email,
+      subject: "Verify your Email for Travel Planner App Account",
+      message: `<div style=""><p>Hi ${this.firstname} ${this.lastname}, </p>
+    <p>Please verify your account by the otp <strong>${emailOtp}</strong></p>
+    <p>If it was not initiated by you, then no action required. Please ignore this mail.</p>
+
+    <p>
+    With regards <br> Travel Planner Team
+    </p>
+    </div>`,
+    };
+
+    await sendOtpToEmail(option);
+  } catch (err) {
+    console.error("Error in generateAndSendOtpEmail:", err);
+
+    throw new Error("Failed to send OTP email");
+  }
 };
 
-userSchema.methods.createOTPHash = function (otp) {
-  this.otp = crypto.createHash("sha256").update(otp).digest("hex");
-  this.otpExpires = new Date(Date.now() + 10 * 60 * 1000);
-};
+userSchema.pre("save", async function (next) {
+  if (this.isNew) {
+    try {
+      const existingUser = await mongoose.models.User.findOne({
+        email: this.email,
+        phone: this.phone,
+      });
+
+      if (existingUser) {
+        if (!existingUser.isEmailVerified) {
+          const err = new Error("User already exists");
+          err.status = 400;
+          return next(err);
+        }
+      }
+
+      const partialMatch = await mongoose.models.User.findOne({
+        $or: [{ email: this.email }, { phone: this.phone }],
+      });
+
+      if (partialMatch) {
+        const err = new Error("Email or phone aleady exists");
+        err.status = 400;
+        return next(err);
+      }
+
+      next();
+    } catch (err) {
+      next(err);
+    }
+  } else {
+    next();
+  }
+});
 
 module.exports = mongoose.model("User", userSchema, "users");

@@ -141,12 +141,7 @@ dist
 # SvelteKit build / generate output
 .svelte-kit
 
-# some currently required untracked files
-check.js
-
-request.js
-test.js
-test2.js
-
 # End of https://www.toptal.com/developers/gitignore/api/node
 
+
+travel-planner-ee3e2-firebase-adminsdk-ik3d9-e1bfed67de.json
