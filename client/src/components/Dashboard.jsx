@@ -109,6 +109,8 @@ const Dashboard = () => {
     dispatch(getAllTripsByUser());
   }, [dispatch]);
 
+  console.log(trips);
+
   return (
     <div className="container">
       <div
