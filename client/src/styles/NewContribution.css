@@ -1,0 +1,4 @@
+.phone-input-no-border input {
+    border: none;
+    outline: none; 
+ }

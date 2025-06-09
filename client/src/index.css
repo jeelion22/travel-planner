@@ -1,0 +1,10 @@
+#root {
+
+  /* background-color:rgb(238, 238, 238); */
+  background: linear-gradient(270deg, rgb(176, 150, 194, 0.8), rgb(98, 62, 165, 0.3), rgb(83, 21, 133, 0.5));
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: 100vh;
+}
+
