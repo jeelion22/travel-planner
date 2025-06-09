@@ -1,6 +1,6 @@
-# ReUniteME (Frontend)
+# Travel-Planner-India (Frontend)
 
-ReuniteME is a web application designed to facilitate the reunion of person with mental health issues and individuals in endangered situations with their families.
+Travel-Planner-India is an application for planning trips to India for touring.
 
 ## Table of Contents
 
@@ -16,25 +16,13 @@ ReuniteME is a web application designed to facilitate the reunion of person with
 
 ## Introduction
 
-The application supports two types of user registrations: Community Contributor and Reunite Seeker (families and friends searching for lost family members).
+With this application, after a successful signing up, users can plan their trips to India. They have options to plan budgets for each trip and then can track them. Also they can search for accommodations and tranportation, and also can create toDos for the trip. Only flights and trains are available for transportations and limited accommodation for major cities. (\*\* All these data are synthetic)
 
 ## Users of the application
 
-#### Community Contributor
+#### CRUD
 
-To create an account as a Community Contributor, users need to provide basic details including their official names, a valid email address, and phone number. Upon successful registration, users can take a picture of a person who needs to be reunited (such as person with mental health issues and those in endangered situations), ensuring that location services are enabled in the camera settings. The size of the uploaded picture should not exceed 5MB. It's important to note that uploads from social media shared photographs should be avoided as they do not contain location metadata.
-
-Community Contributors can perform CRUD operations on their contributions while respecting the privacy of individuals involved.
-
-#### Reunite Seeker
-
-To create an account as a Reunite Seeker, users must provide additional information such as a valid current address, a type of government-approved ID, and the ID number. This information helps verify their identity and enables officials to contact them regarding the individuals in need.
-
-Upon successful registration, users can access information about individuals in need of reunification. If they locate their family member, they can submit a response form. After successful submission, the individual's location is revealed. Upon visiting the location and confirming their status, users can update their status. Once the individual is recovered, the location becomes permanently inaccessible to other users, and contributors are notified.
-
-#### Admins
-
-The application includes admins with varying permission levels. The root admin has full accessibility to the application, including creating new admins, updating user information, and managing contributions. Other admins have restricted permissions based on their assigned levels of access.
+Users are capable of make a complete CRUD operations on their trips
 
 ## Technologies Used
 
@@ -42,17 +30,18 @@ The application includes admins with varying permission levels. The root admin h
 - **React Router DOM**: Used for routing within the React application.
 - **Bootstrap**: Used for styling and responsive design components.
 - **Axios**: Used for making HTTP requests to the server.
+- **Redux**: Used for App's state management
 - **Formik**: Used for building and managing forms with React.
 - **Yup**: Used for form validation with Formik.
-- **React International Phone**: Used for international phone number input handling.
 - **React Phone Number Input**: Used for phone number input handling.
+- **React OTP Input**: Used for otp input
 - **React Paginate**: Used for pagination in lists of data.
-- **Recharts**: Used for creating charts and graphs in the application.
 - **Font Awesome Icons**: Used for adding icons to the user interface.
+- **React Currency Symbol Map**: Used for mapping currency code to its symbol
 
 ## Application Link
 
-[ReUniteME](https://reuniteme.netlify.app/)
+[Travel Planner](https://travel-planner-india.netlify.app/)
 
 ## Application Images
 
@@ -62,23 +51,29 @@ The below images are about how our web application looks like.
 
 ![User registration](/src/assets/img2.png)
 
-![User register as community uploader](/src/assets/img3.png)
+![User login](/src/assets/img3.png)
 
-![User register as reunite seeker](/src/assets/img4.png)
+![User password reset](/src/assets/img4.png)
 
-![User forgot password link](/src/assets/img5.png)
+![User login with credential](/src/assets/img5.png)
 
-![Admin login](/src/assets/img7.png)
+![User dashboard](/src/assets/img6.png)
 
-![Admin forgot password](/src/assets/img6.png)
+![Add new trip](/src/assets/img7.png)
+
+![trip dashbord](/src/assets/img8.png)
+
+![Accommodation booking](/src/assets/img9.png)
+
+![transportation booking](/src/assets/img10.png)
 
 ## Installation
 
 1. **Clone the repository:**
 
    ```bash
-   git clone https://github.com/jeelion22/reuniteME-Frontend.git
-   cd ReuniteME-Frontend
+   https://github.com/jeelion22/travel-planner-frontend.git
+   cd travel-planner-frontend
 
    ```
 
@@ -96,13 +91,13 @@ The below images are about how our web application looks like.
 
 ## Contributing
 
-Contributions are crucial to enhancing the security, reliability, and functionality of ReuniteME. Your input can help integrate features such as collaboration with government organizations to verify the identities of Reunite Seekers, ensuring credibility and instant verification through authorized bodies, and partnering with asylums to provide support if individuals are not rescued, prioritizing their privacy and safety.
+Contributions are crucial to enhancing the security, reliability, and functionality of the app. Your input can help integrate features and identify bugs and enhance user experience.
 
 ### Goals of Contributions
 
-- **Enhanced Security**: Implement measures to protect the privacy and safety of mentally ill and endangered individuals.
+- **Enhanced Security**: Implement measures to protect the privacy and safety of users.
 - **Reliability**: Improve the application's reliability through bug fixes and performance enhancements.
-- **Feature Expansion**: Add new features that facilitate efficient reunification processes and enhance user experience.
+- **Feature Expansion**: Add new features that facilitate efficient processes and enhance user experience.
 
 ### How You Can Contribute
 
@@ -117,7 +112,7 @@ Contributions are crucial to enhancing the security, reliability, and functional
 - **Collaboration**: Work together with the community and maintain open communication.
 - **Quality Assurance**: Follow best practices for code quality, security, and performance.
 
-Your contributions are valued and essential in making ReuniteME a secure and reliable platform for reuniting families and ensuring the well-being of individuals in need.
+Your contributions are valued and essential in making Travel-Planner-India a secure and reliable platform for planning trips for individuals in need.
 
 ## License
 
