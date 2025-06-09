@@ -2,6 +2,7 @@ const mongoose = require("mongoose");
 const config = require("./utils/config");
 const path = require("path");
 const app = require("./app");
+const express = require("express");
 
 console.log("Conecting to MongoDB...");
 
