@@ -1,54 +1,43 @@
 const express = require("express");
+const cookieParser = require("cookie-parser");
+const morgan = require("morgan");
+const cors = require("cors");
 
 const userRouter = require("./routes/userRoutes");
-
-const cors = require("cors");
+const tripRouter = require("./routes/tripRoutes");
+const flightRouter = require("./routes/flightRoutes");
+const trainRouter = require("./routes/trainRoutes");
+const accommodationRouter = require("./routes/accommodationRoute");
 
 const app = express();
 
-const cookieParser = require("cookie-parser");
+// ✅ Enable CORS only for development or if needed
+// Remove this entirely if you're using same-origin deployment (frontend served by Express)
+if (process.env.NODE_ENV !== "production") {
+  app.use(
+    cors({
+      origin: "http://localhost:5173", // Vite dev server
+      credentials: true,
+    })
+  );
+}
 
-const morgan = require("morgan");
-const tripRouter = require("./routes/tripRoutes");
-
-const flightRouter = require("./routes/flightRoutes");
-
-const trainRouter = require("./routes/trainRoutes");
-
-const accommodationRouter = require("./routes/accommodationRoute");
-
-// app.use(
-//   cors({
-//     origin: "https://travel-planner-india.netlify.app",
-//     credentials: true,
-//   })
-// );
-
-// app.use((req, res, next) => {
-//   req.header(
-//     "Access-Control-Allow-Origin",
-//     "https://travel-planner-india.netlify.app"
-//   );
-//   res.header(
-//     "Access-Control-Allow-Headers",
-//     "Origin, X-Requested-With, Content-Type, Accept"
-//   );
-//   next();
-// });
-
+// ✅ Core middlewares
 app.use(cookieParser());
 app.use(morgan("dev"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+// ✅ Route handling
+app.use("/api/users", userRouter);
+app.use("/api/trips", tripRouter); // Assuming this is a separate router
+app.use("/api/flights", flightRouter);
+app.use("/api/trains", trainRouter);
+app.use("/api/accommodations", accommodationRouter);
+
+// ✅ Optional: Test route
 app.get("/api", (req, res) => {
-  res.json({ message: "Welcome to travel-planner-india app api enpoints!" });
+  res.json({ message: "Welcome to travel-planner-india API!" });
 });
-
-app.use("/api/users", userRouter, tripRouter);
-
-app.use("/api/admins", flightRouter, trainRouter, accommodationRouter);
-
-module.exports = app;
 
 module.exports = app;
