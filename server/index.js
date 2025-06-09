@@ -1,12 +1,19 @@
 const mongoose = require("mongoose");
+const path = require("path");
+const express = require("express"); // ✅ required if not in app.js
 const adminController = require("./controllers/adminController");
 
 const config = require("./utils/config");
+const app = require("./app"); // this should be your Express app instance
 
-const app = require("./app");
+// ✅ Correct way to serve Vite build
+app.use(express.static(path.join(__dirname, "../client/dist")));
+
+app.get("*", (req, res) => {
+  res.sendFile(path.join(__dirname, "../client/dist/index.html"));
+});
 
 console.log("Connecting to MongoDB...");
-// connect to MongoDB using mongoose
 mongoose
   .connect(config.MONGODB_URI)
   .then(() => {
