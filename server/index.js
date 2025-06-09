@@ -1,9 +1,15 @@
 const mongoose = require("mongoose");
 const config = require("./utils/config");
-
+const path = require("path");
 const app = require("./app");
 
 console.log("Conecting to MongoDB...");
+
+app.use(express.static(path.join(__dirname, "../client/dist")));
+
+app.get("*", (req, res) => {
+  res.sendFile(path.join(__dirname, "../client/dist/index.html"));
+});
 
 mongoose
   .connect(config.MONGODB_URI)

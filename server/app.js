@@ -1,7 +1,6 @@
 const express = require("express");
 
 const userRouter = require("./routes/userRoutes");
-const path = require("path");
 
 const cors = require("cors");
 
@@ -37,16 +36,10 @@ const accommodationRouter = require("./routes/accommodationRoute");
 //   next();
 // });
 
-app.use(express.static(path.join(__dirname, "../client/dist")));
-
 app.use(cookieParser());
 app.use(morgan("dev"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-
-app.get("*", (req, res) => {
-  res.sendFile(path.join(__dirname, "../client/dist/index.html"));
-});
 
 app.get("/api", (req, res) => {
   res.json({ message: "Welcome to travel-planner-india app api enpoints!" });
