@@ -118,7 +118,7 @@ const userController = {
         path: "/",
         httpOnly: true,
         secure: true,
-        sameSite: "none",
+        sameSite: "strict",
         expires: new Date(Date.now() + 24 * 3600 * 1000),
       });
 
