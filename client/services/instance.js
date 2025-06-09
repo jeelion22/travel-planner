@@ -9,6 +9,9 @@ const instance = axios.create({
     "Content-Type": "application/json",
   },
   withCredentials: true,
+  headers: {
+    "Content-Type": "application/json",
+  },
 });
 
 const protectedInstance = axios.create({
